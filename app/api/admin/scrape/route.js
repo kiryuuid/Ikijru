@@ -92,16 +92,29 @@ async function scrapeMangaDetails(url) {
   const author = getInfoValue('Author') || '';
   const alternativeTitle = getInfoValue('Alternative') || '';
   const series = getInfoValue('Serialization') || '';
+  const parody = getInfoValue('Parody') || '';
+  const character = getInfoValue('Character') || '';
 
   // Rating
   const scoreMatch = html.match(/<div class="score">([\d.]+)<\/div>/i);
   const rating = scoreMatch ? scoreMatch[1].trim() : '0';
 
+  // datePublished & dateModified
+  const dpMatch =
+    html.match(/"datePublished"\s*:\s*"([^"]+)"/i) ||
+    html.match(/<meta itemprop="datePublished" content="([^"]+)"/i) ||
+    html.match(/<meta property="article:published_time" content="([^"]+)"/i);
+  const dmMatch =
+    html.match(/"dateModified"\s*:\s*"([^"]+)"/i) ||
+    html.match(/<meta property="article:modified_time" content="([^"]+)"/i);
+
+  const datePublished = dpMatch ? dpMatch[1] : null;
+  const dateModified = dmMatch ? dmMatch[1] : null;
+
   // Created / Year
-  const dateMatch = html.match(/<meta itemprop="datePublished" content="([^"]+)"/i);
   let created = '';
-  if (dateMatch) {
-    const yr = new Date(dateMatch[1]).getFullYear();
+  if (datePublished) {
+    const yr = new Date(datePublished).getFullYear();
     if (yr) created = String(yr);
   }
 
@@ -200,6 +213,10 @@ async function scrapeMangaDetails(url) {
     slug,
     thumb,
     synopsis,
+    parody,
+    character,
+    datePublished,
+    dateModified,
     metadata: {
       status,
       type,
@@ -207,14 +224,18 @@ async function scrapeMangaDetails(url) {
       author,
       rating,
       created,
+      parody,
+      character,
+      datePublished,
+      dateModified,
     },
     tags: tags.join(', '),
     chapters,
   };
 }
 
-// Helper: Scrape chapter images from chapter link
-async function scrapeChapterImages(chapterUrl) {
+// Helper: Scrape chapter images and datePublished from chapter link
+async function scrapeChapterData(chapterUrl) {
   const res = await fetch(chapterUrl, {
     headers: { 'User-Agent': USER_AGENT },
   });
@@ -224,28 +245,43 @@ async function scrapeChapterImages(chapterUrl) {
   }
 
   const html = await res.text();
+
+  // Ambil datePublished chapter dari JSON-LD atau meta tag
+  const dpMatch =
+    html.match(/"datePublished"\s*:\s*"([^"]+)"/i) ||
+    html.match(/<meta property="article:published_time" content="([^"]+)"/i) ||
+    html.match(/<time[^>]*datetime="([^"]+)"/i);
+  const datePublished = dpMatch ? dpMatch[1] : null;
+
+  let images = [];
   const scriptMatch = html.match(/ts_reader\.run\(([\s\S]*?)\);/i);
   if (scriptMatch) {
     try {
       const data = JSON.parse(scriptMatch[1]);
       const imgs = data.sources?.[0]?.images || [];
-      if (imgs.length > 0) return imgs;
+      if (imgs.length > 0) images = imgs;
     } catch (e) {}
   }
 
   // Fallback: cek tag img di #readerarea
-  const readerArea = html.match(/<div id="readerarea"[^>]*>([\s\S]*?)<\/div>/i);
-  if (readerArea) {
-    const imgMatches = readerArea[1].matchAll(/<img[^>]+(?:src|data-src)="([^">]+)"/gi);
-    const imgs = [];
-    for (const m of imgMatches) {
-      if (m[1] && !imgs.includes(m[1])) imgs.push(m[1]);
+  if (images.length === 0) {
+    const readerArea = html.match(/<div id="readerarea"[^>]*>([\s\S]*?)<\/div>/i);
+    if (readerArea) {
+      const imgMatches = readerArea[1].matchAll(/<img[^>]+(?:src|data-src)="([^">]+)"/gi);
+      for (const m of imgMatches) {
+        if (m[1] && !images.includes(m[1])) images.push(m[1]);
+      }
     }
-    if (imgs.length > 0) return imgs;
   }
 
-  return [];
+  return { images, datePublished };
 }
+
+// Alias for backwards compatibility
+const scrapeChapterImages = async (url) => {
+  const data = await scrapeChapterData(url);
+  return data.images;
+};
 
 export async function POST(request) {
   try {
@@ -272,8 +308,8 @@ export async function POST(request) {
         return errorResponse('URL Chapter wajib diisi', 400);
       }
 
-      const images = await scrapeChapterImages(url);
-      return successResponse({ images });
+      const { images, datePublished } = await scrapeChapterData(url);
+      return successResponse({ images, datePublished });
     }
 
     // 3. Scrape & Simpan Langsung Chapter ke Database
@@ -284,31 +320,43 @@ export async function POST(request) {
 
       await dbConnect();
 
-      // Ambil gambar dari halaman chapter
-      const images = await scrapeChapterImages(chapter.link);
+      // Ambil gambar & tanggal post dari halaman chapter
+      const { images, datePublished: chDatePublished } = await scrapeChapterData(chapter.link);
+      const chDate = chDatePublished ? new Date(chDatePublished) : null;
+
+      const updateFields = {
+        manga_id,
+        title: chapter.title,
+        slug: chapter.slug,
+        chapter_index: chapter.chapter_index,
+        images,
+        link: chapter.link,
+      };
+
+      if (chDate) {
+        updateFields.datePublished = chDate;
+        updateFields.createdAt = chDate;
+        updateFields.updatedAt = chDate;
+      }
 
       // Simpan / update chapter
       const updatedChapter = await Chapter.findOneAndUpdate(
         { manga_id, slug: chapter.slug },
-        {
-          $set: {
-            manga_id,
-            title: chapter.title,
-            slug: chapter.slug,
-            chapter_index: chapter.chapter_index,
-            images,
-            link: chapter.link,
-          },
-        },
-        { upsert: true, new: true }
+        { $set: updateFields },
+        { upsert: true, new: true, timestamps: !chDate }
       );
 
-      // Update updatedAt pada Manga
-      await Manga.findByIdAndUpdate(manga_id, { updatedAt: new Date() });
+      // Update updatedAt pada Manga sesuai tanggal chapter terbaru
+      if (chDate) {
+        await Manga.findByIdAndUpdate(manga_id, { $max: { updatedAt: chDate } });
+      } else {
+        await Manga.findByIdAndUpdate(manga_id, { updatedAt: new Date() });
+      }
 
       return successResponse({
         chapter: updatedChapter,
         imagesCount: images.length,
+        datePublished: chDatePublished,
       });
     }
 

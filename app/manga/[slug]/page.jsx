@@ -68,6 +68,9 @@ export default async function MangaDetailPage({ params }) {
   const type = manga.type || '';
   const status = manga.status || '';
   const author = manga.author || '';
+  const parody = manga.parody || '';
+  const character = manga.character || '';
+  const datePublished = manga.datePublished || manga.createdAt || '';
   const synopsis = manga.synopsis || '';
   const rating = manga.rating || 0;
   const genres = manga.tags || manga.genres || [];
@@ -219,13 +222,23 @@ export default async function MangaDetailPage({ params }) {
                   Author: <span className="text-text-secondary font-semibold">{author}</span>
                 </p>
               )}
+              {parody && (
+                <p className="text-text-muted text-xs mt-0.5 truncate">
+                  Parody: <span className="text-accent-red font-semibold">{parody}</span>
+                </p>
+              )}
+              {character && (
+                <p className="text-text-muted text-xs mt-0.5 truncate">
+                  Character: <span className="text-text-secondary font-semibold">{character}</span>
+                </p>
+              )}
             </div>
           </div>
 
           {/* Desktop Banner Content (hidden on mobile) */}
           <div className="hidden md:flex relative z-10 p-6 lg:p-8 items-center justify-between gap-6">
             <div className="max-w-3xl">
-              <div className="flex items-center gap-2 mb-2">
+              <div className="flex items-center gap-2 mb-2 flex-wrap">
                 {type && (
                   <span className={`text-xs font-bold px-3 py-1 rounded-full uppercase border ${type?.toLowerCase() === 'manhwa' ? 'bg-purple-900/50 border-purple-700 text-purple-300'
                     : type?.toLowerCase() === 'manhua' ? 'bg-orange-900/50 border-orange-700 text-orange-300'
@@ -246,6 +259,11 @@ export default async function MangaDetailPage({ params }) {
                 {author && (
                   <span className="text-xs text-text-muted border border-border bg-bg-card/60 px-3 py-1 rounded-full">
                     Penulis: <strong className="text-text-primary">{author}</strong>
+                  </span>
+                )}
+                {parody && (
+                  <span className="text-xs text-text-muted border border-border bg-bg-card/60 px-3 py-1 rounded-full">
+                    Parody: <strong className="text-accent-red">{parody}</strong>
                   </span>
                 )}
               </div>
@@ -337,8 +355,8 @@ export default async function MangaDetailPage({ params }) {
               <BookmarkButton manga={manga} />
             </div>
 
-            {/* Metadata Specs Box (Desktop) */}
-            <div className="hidden md:block bg-bg-card border border-border rounded-2xl p-4 shadow-sm space-y-3 text-xs">
+            {/* Metadata Specs Box */}
+            <div className="bg-bg-card border border-border rounded-2xl p-4 shadow-sm space-y-3 text-xs">
               <h3 className="font-bold text-text-primary text-sm border-b border-border pb-2">Informasi Komik</h3>
               <div className="flex justify-between items-center py-1 border-b border-border">
                 <span className="text-text-muted">Status</span>
@@ -352,6 +370,26 @@ export default async function MangaDetailPage({ params }) {
                 <span className="text-text-muted">Penulis</span>
                 <span className="font-bold text-text-primary truncate max-w-[140px] text-right">{author || '-'}</span>
               </div>
+              {parody && (
+                <div className="flex justify-between items-center py-1 border-b border-border">
+                  <span className="text-text-muted">Parody</span>
+                  <span className="font-bold text-accent-red truncate max-w-[140px] text-right">{parody}</span>
+                </div>
+              )}
+              {character && (
+                <div className="flex justify-between items-start py-1 border-b border-border">
+                  <span className="text-text-muted flex-shrink-0">Character</span>
+                  <span className="font-bold text-text-primary text-right pl-2 leading-relaxed">{character}</span>
+                </div>
+              )}
+              {datePublished && (
+                <div className="flex justify-between items-center py-1 border-b border-border">
+                  <span className="text-text-muted">Rilis</span>
+                  <span className="font-bold text-text-primary">
+                    {new Date(datePublished).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+                  </span>
+                </div>
+              )}
               <div className="flex justify-between items-center py-1 border-b border-border">
                 <span className="text-text-muted">Total Chapter</span>
                 <span className="font-bold text-text-primary">{chapters.length}</span>

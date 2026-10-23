@@ -31,15 +31,15 @@ export default async function sitemap() {
 
   try {
     const mangas = await getAllMangaSlugs();
-    const mangaPages = mangas.map((manga) => ({
-      url: `${SITE_URL}/manga/${manga.slug}`,
-      // Pakai lastUpdated dari DB jika ada, fallback ke DEPLOY_DATE (bukan new Date())
-      lastModified: manga.lastUpdated
-        ? new Date(manga.lastUpdated)
-        : new Date(DEPLOY_DATE),
-      changeFrequency: manga.status?.toLowerCase() === 'ongoing' ? 'daily' : 'weekly',
-      priority: 0.8,
-    }));
+    const mangaPages = mangas.map((manga) => {
+      const modDate = manga.lastUpdated || manga.last_update || manga.updatedAt || manga.datePublished || manga.createdAt;
+      return {
+        url: `${SITE_URL}/manga/${manga.slug}`,
+        lastModified: modDate ? new Date(modDate) : new Date(DEPLOY_DATE),
+        changeFrequency: manga.status?.toLowerCase() === 'ongoing' ? 'daily' : 'weekly',
+        priority: 0.8,
+      };
+    });
 
     return [...staticPages, ...mangaPages];
   } catch {

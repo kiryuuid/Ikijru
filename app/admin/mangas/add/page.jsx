@@ -45,6 +45,9 @@ export default function AdminAddManga() {
     thumb: '',
     views: 0,
     synopsis: '',
+    parody: '',
+    character: '',
+    datePublished: '',
     metadata: {
       status: 'Publishing',
       type: 'manga',
@@ -52,6 +55,9 @@ export default function AdminAddManga() {
       author: '',
       rating: '0',
       created: '',
+      parody: '',
+      character: '',
+      datePublished: '',
     },
     tags: '',
   });
@@ -123,6 +129,9 @@ export default function AdminAddManga() {
         thumb: d.thumb || '',
         views: 0,
         synopsis: d.synopsis || '',
+        parody: d.parody || d.metadata?.parody || '',
+        character: d.character || d.metadata?.character || '',
+        datePublished: d.datePublished || d.metadata?.datePublished || '',
         metadata: {
           status: d.metadata?.status || 'Publishing',
           type: d.metadata?.type || 'manga',
@@ -130,6 +139,9 @@ export default function AdminAddManga() {
           author: d.metadata?.author || '',
           rating: d.metadata?.rating || '0',
           created: d.metadata?.created || '',
+          parody: d.parody || d.metadata?.parody || '',
+          character: d.character || d.metadata?.character || '',
+          datePublished: d.datePublished || d.metadata?.datePublished || '',
         },
         tags: d.tags || '',
       });
@@ -577,6 +589,36 @@ export default function AdminAddManga() {
               placeholder="Toptoon"
               name="metadata.series"
               value={formData.metadata.series}
+              onChange={handleChange}
+              className="w-full min-w-0 bg-bg-primary border border-border text-text-primary rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-sm focus:border-accent-red outline-none transition-all"
+            />
+          </div>
+
+          {/* Parody */}
+          <div className="space-y-1.5 min-w-0">
+            <label className="text-xs sm:text-sm font-semibold text-text-primary">
+              Parody
+            </label>
+            <input
+              type="text"
+              placeholder="Date A Live / Original"
+              name="metadata.parody"
+              value={formData.metadata.parody || ''}
+              onChange={handleChange}
+              className="w-full min-w-0 bg-bg-primary border border-border text-text-primary rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-sm focus:border-accent-red outline-none transition-all"
+            />
+          </div>
+
+          {/* Character */}
+          <div className="space-y-1.5 min-w-0">
+            <label className="text-xs sm:text-sm font-semibold text-text-primary">
+              Karakter / Character
+            </label>
+            <input
+              type="text"
+              placeholder="Itsuka Shidou, Tokisaki Kurumi"
+              name="metadata.character"
+              value={formData.metadata.character || ''}
               onChange={handleChange}
               className="w-full min-w-0 bg-bg-primary border border-border text-text-primary rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-sm focus:border-accent-red outline-none transition-all"
             />

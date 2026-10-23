@@ -178,8 +178,8 @@ export default function ChapterList({ chapters, mangaSlug }) {
                 <p className="text-sm font-semibold text-text-primary group-hover:text-accent-red transition-colors truncate">
                   {formatChapterItemTitle(ch.title)}
                 </p>
-                {ch.createdAt && (
-                  <p className="text-[10px] text-text-muted mt-0.5">{formatDate(ch.createdAt)}</p>
+                {(ch.datePublished || ch.createdAt) && (
+                  <p className="text-[10px] text-text-muted mt-0.5">{formatDate(ch.datePublished || ch.createdAt)}</p>
                 )}
               </Link>
               <div className="flex items-center gap-3 ml-2 flex-shrink-0">

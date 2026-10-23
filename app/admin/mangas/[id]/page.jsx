@@ -43,6 +43,8 @@ export default function AdminEditManga({ params }) {
           slug: d.slug || '',
           thumb: d.thumb || '',
           views: d.views || 0,
+          parody: d.parody || d.metadata?.parody || '',
+          character: d.character || d.metadata?.character || '',
           metadata: {
             status: d.metadata?.status || 'Ongoing',
             type: d.metadata?.type || 'Manga',
@@ -50,6 +52,8 @@ export default function AdminEditManga({ params }) {
             author: d.metadata?.author || '',
             rating: d.metadata?.rating || '0',
             created: d.metadata?.created || '',
+            parody: d.parody || d.metadata?.parody || '',
+            character: d.character || d.metadata?.character || '',
           },
           synopsis: d.synopsis || '',
           tags: d.tags?.join(', ') || ''
@@ -277,6 +281,17 @@ export default function AdminEditManga({ params }) {
                 <div>
                   <label className="text-sm font-semibold text-text-primary block mb-1">Series</label>
                   <input name="metadata.series" value={formData.metadata.series} onChange={handleChange} className="w-full min-w-0 bg-bg-primary border border-border text-text-primary rounded-xl px-4 py-2 focus:border-accent-red outline-none" />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-semibold text-text-primary block mb-1">Parody</label>
+                  <input name="metadata.parody" value={formData.metadata.parody || ''} onChange={handleChange} placeholder="Date A Live / Original" className="w-full min-w-0 bg-bg-primary border border-border text-text-primary rounded-xl px-4 py-2 focus:border-accent-red outline-none" />
+                </div>
+                <div>
+                  <label className="text-sm font-semibold text-text-primary block mb-1">Karakter / Character</label>
+                  <input name="metadata.character" value={formData.metadata.character || ''} onChange={handleChange} placeholder="Itsuka Shidou, Tokisaki Kurumi" className="w-full min-w-0 bg-bg-primary border border-border text-text-primary rounded-xl px-4 py-2 focus:border-accent-red outline-none" />
                 </div>
               </div>
 

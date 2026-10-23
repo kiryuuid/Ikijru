@@ -70,6 +70,13 @@ export async function POST(request) {
       return errorResponse('Manga dengan slug ini sudah ada', 409);
     }
 
+    const mangaDate = (body.datePublished || body.metadata?.datePublished)
+      ? new Date(body.datePublished || body.metadata?.datePublished)
+      : null;
+    const mangaModDate = (body.dateModified || body.metadata?.dateModified)
+      ? new Date(body.dateModified || body.metadata?.dateModified)
+      : mangaDate;
+
     const newManga = new Manga({
       title: body.title,
       alternativeTitle: body.alternativeTitle || '',
@@ -77,6 +84,11 @@ export async function POST(request) {
       thumb: body.thumb || '',
       synopsis: body.synopsis || '',
       views: Number(body.views) || 0,
+      parody: body.parody || body.metadata?.parody || '',
+      character: body.character || body.metadata?.character || '',
+      datePublished: mangaDate,
+      ...(mangaDate && { createdAt: mangaDate }),
+      ...(mangaModDate && { updatedAt: mangaModDate }),
       metadata: {
         status: body.metadata?.status || 'Ongoing',
         type: body.metadata?.type || 'Manga',
@@ -84,6 +96,10 @@ export async function POST(request) {
         author: body.metadata?.author || '',
         rating: body.metadata?.rating || '0',
         created: body.metadata?.created || '',
+        parody: body.parody || body.metadata?.parody || '',
+        character: body.character || body.metadata?.character || '',
+        datePublished: body.datePublished || body.metadata?.datePublished || '',
+        dateModified: body.dateModified || body.metadata?.dateModified || '',
       },
       tags: body.tags || [],
     });

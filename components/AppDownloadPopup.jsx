@@ -8,9 +8,8 @@ const SHOW_DELAY = 3000; // Tampil setelah 3 detik
 const AUTO_DISMISS = 15000; // Auto-close setelah 15 detik
 
 export default function AppDownloadPopup() {
-  const [visible, setVisible] = useState(false);
-  const [closing, setClosing] = useState(false);
-  const [animateIn, setAnimateIn] = useState(false);
+  // Sementara dinonaktifkan sesuai permintaan
+  return null;
 
   const dismiss = useCallback((permanent = false) => {
     setClosing(true);

@@ -1,4 +1,4 @@
-﻿import dbConnect from '@/lib/mongodb';
+import dbConnect from '@/lib/mongodb';
 import Manga from '@/lib/models/Manga';
 import Chapter from '@/lib/models/Chapter';
 import { successResponse, errorResponse, attachChapterCounts } from '@/lib/api-helpers';
@@ -20,7 +20,7 @@ export async function GET(request, { params }) {
 
     const [chapters, rawRecommendations] = await Promise.all([
       Chapter.find({ manga_id: manga._id })
-        .select('title slug chapter_index createdAt')
+        .select('title slug chapter_index createdAt datePublished')
         .sort({ chapter_index: -1 })
         .collation({ locale: 'en_US', numericOrdering: true })
         .lean(),

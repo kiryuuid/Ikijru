@@ -119,7 +119,8 @@ export default function RootLayout({ children }) {
             {/* Sticky bottom ad — harus di dalam AuthProvider agar tidak tampil untuk admin/premium */}
             <AdBanner slot="STICKY_BOTTOM" sticky />
           </AuthProvider>
-          <AppDownloadPopup />
+          {/* Popup download aplikasi dinonaktifkan sementara */}
+          {/* <AppDownloadPopup /> */}
         </ThemeProvider>
       </body>
     </html>
