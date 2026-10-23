@@ -430,9 +430,14 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto flex items-center justify-between px-3 sm:px-6 lg:px-8 h-14 md:h-16 min-w-0 gap-3">
           {/* Logo & Desktop Nav */}
           <div className="flex items-center gap-3 lg:gap-6 min-w-0">
-            <Link href="/" className="flex items-center gap-1.5 min-w-0 flex-shrink-0">
+            <Link href="/" className="flex items-center gap-2 min-w-0 flex-shrink-0 group">
+              <img
+                src="/logo.png"
+                alt="Pojokmanga"
+                className="w-8 h-8 md:w-9 md:h-9 object-contain rounded-lg transition-transform group-hover:scale-105"
+              />
               <span className="font-display text-2xl md:text-3xl text-accent-red tracking-wider">
-                {process.env.NEXT_PUBLIC_SITE_NAME || 'DOUJINDESU'}
+                {process.env.NEXT_PUBLIC_SITE_NAME || 'POJOKMANGA'}
               </span>
             </Link>
 

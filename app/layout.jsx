@@ -9,14 +9,14 @@ import ThemeProvider from '@/components/ThemeProvider';
 import AppDownloadPopup from '@/components/AppDownloadPopup';
 
 
-const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || 'Doujindesu';
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://doujindesu.web.id';
-const SITE_DESC = `UPDATE Doujinshi setiap hari hanya di ${SITE_NAME}. Doujinshi disini bermuatan konten dewasa, jadi sesuaikanlah dengan bijak antara bacaan anda dengan umur anda. Semua doujin disini hanya fiktif belaka.`;
+const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || 'Pojokmanga';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://pojokmanga.fun';
+const SITE_DESC = `UPDATE Komik, Manga, Manhwa, dan Doujinshi setiap hari terlengkap hanya di ${SITE_NAME}. Baca online dan download gratis bahasa Indonesia.`;
 
 export const metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: `${SITE_NAME} - Baca & Download Doujinshi Bahasa Indonesia`,
+    default: `${SITE_NAME} - Baca & Download Komik Manga Manhwa Bahasa Indonesia`,
     template: `%s - ${SITE_NAME}`,
   },
   description: SITE_DESC,
@@ -29,13 +29,13 @@ export const metadata = {
     locale: 'id_ID',
     url: SITE_URL,
     siteName: SITE_NAME,
-    title: `${SITE_NAME} - Baca & Download Doujinshi Bahasa Indonesia`,
+    title: `${SITE_NAME} - Baca & Download Komik Manga Manhwa Bahasa Indonesia`,
     description: SITE_DESC,
     images: [{ url: '/og-image.png', width: 1200, height: 630, alt: SITE_NAME }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: `${SITE_NAME} - Baca & Download Doujinshi Bahasa Indonesia`,
+    title: `${SITE_NAME} - Baca & Download Komik Manga Manhwa Bahasa Indonesia`,
     description: SITE_DESC,
     images: ['/og-image.png'],
   },
@@ -64,7 +64,9 @@ export default function RootLayout({ children }) {
           href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;500;600;700;800&display=swap"
           rel="stylesheet"
         />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="manifest" href="/manifest.json" />
         <meta name="mobile-web-app-capable" content="yes" />

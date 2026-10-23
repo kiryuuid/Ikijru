@@ -1,11 +1,11 @@
 {
-  "name": "Doujindesu",
-  "short_name": "Doujindesu",
-  "description": "Baca manga, manhwa, dan manhua gratis",
+  "name": "Pojokmanga",
+  "short_name": "Pojokmanga",
+  "description": "Baca manga, manhwa, dan manhua bahasa Indonesia gratis",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0a0a0f",
-  "theme_color": "#0a0a0f",
+  "background_color": "#080c14",
+  "theme_color": "#080c14",
   "orientation": "portrait",
   "icons": [
     {
