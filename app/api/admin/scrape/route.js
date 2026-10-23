@@ -347,12 +347,12 @@ export async function POST(request) {
       const updatedChapter = await Chapter.findOneAndUpdate(
         { manga_id, slug: chapter.slug },
         { $set: updateFields },
-        { upsert: true, new: true, timestamps: !chDate }
+        { upsert: true, returnDocument: 'after', timestamps: !chDate }
       );
 
       // Update updatedAt pada Manga sesuai tanggal chapter terbaru
       if (chDate) {
-        await Manga.findByIdAndUpdate(manga_id, { $max: { updatedAt: chDate } });
+        await Manga.findByIdAndUpdate(manga_id, { $max: { updatedAt: chDate } }, { timestamps: false });
       } else {
         await Manga.findByIdAndUpdate(manga_id, { updatedAt: new Date() });
       }
