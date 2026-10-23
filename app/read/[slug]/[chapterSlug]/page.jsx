@@ -1,7 +1,7 @@
 import ReaderClient from './ReaderClient';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://doujindesu.online';
-const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || 'DoujinDesu';
+const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || 'Pojokmanga';
 const isDev = process.env.NODE_ENV === 'development';
 const BACKEND = isDev ? 'http://localhost:3000/api' : `${SITE_URL.replace(/\/+$/, '')}/api`;
 

@@ -98,6 +98,7 @@ function ProtectedImage({ src, alt, pageNum }) {
 }
 
 const IMAGE_PROXY_BASE = (process.env.NEXT_PUBLIC_IMAGE_PROXY_URL || 'https://api-imagesme-dpcfela3jjz4.edgeone.dev').replace(/\/+$/, '');
+const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || 'Pojokmanga';
 
 function normalizeChapterImageUrl(rawUrl) {
   if (!rawUrl) return '';
@@ -650,7 +651,7 @@ export default function ReaderClient() {
               <span>Baca {mangaTitle} {chapterTitle} Bahasa Indonesia</span>
             </h2>
             <p className="text-[11px] sm:text-xs text-text-muted leading-relaxed mb-4">
-              Kamu sedang membaca komik <strong className="text-text-secondary">{mangaTitle} {chapterTitle}</strong> bahasa Indonesia secara online dan gratis di <strong className="text-text-secondary">Doujinpoi</strong>. Jangan lupa untuk melihat seluruh daftar chapter komik ini di halaman{' '}
+              Kamu sedang membaca komik <strong className="text-text-secondary">{mangaTitle} {chapterTitle}</strong> bahasa Indonesia secara online dan gratis di <strong className="text-text-secondary">{SITE_NAME}</strong>. Jangan lupa untuk melihat seluruh daftar chapter komik ini di halaman{' '}
               <Link
                 href={`/manga/${manga?.slug || slug}`}
                 className="text-accent-red hover:underline font-semibold"
@@ -671,7 +672,7 @@ export default function ReaderClient() {
                 `${mangaTitle} Bahasa Indonesia`,
                 `Download ${mangaTitle} PDF`,
                 `Manga ${mangaTitle}`,
-                `Doujinpoi`,
+                SITE_NAME,
               ].map((kw, i) => (
                 <span
                   key={i}
