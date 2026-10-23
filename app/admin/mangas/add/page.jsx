@@ -11,6 +11,7 @@ import {
   CheckCircle2,
   ListChecks,
   Image as ImageIcon,
+  Upload,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -19,6 +20,10 @@ export default function AdminAddManga() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  // Cover R2 upload state
+  const [uploadingCover, setUploadingCover] = useState(false);
+  const [uploadCoverSuccess, setUploadCoverSuccess] = useState(false);
 
   // Scraper states
   const [scraperUrl, setScraperUrl] = useState('');
@@ -87,6 +92,58 @@ export default function AdminAddManga() {
               .replace(/(^-|-$)+/g, ''),
           }),
       }));
+    }
+  };
+
+  const handleCoverUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('Hanya berkas gambar yang diperbolehkan!');
+      return;
+    }
+
+    if (!user?.googleId) {
+      alert('Sesi admin tidak valid. Silakan login ulang.');
+      return;
+    }
+
+    setUploadingCover(true);
+    setUploadCoverSuccess(false);
+
+    try {
+      const data = new FormData();
+      data.append('file', file);
+      if (formData.slug) {
+        data.append('slug', formData.slug);
+      }
+
+      const res = await fetch('/api/admin/upload-cover', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${user.googleId}`,
+        },
+        body: data,
+      });
+
+      const json = await res.json();
+      if (json.success && json.data?.url) {
+        setFormData((prev) => ({
+          ...prev,
+          thumb: json.data.url,
+        }));
+        setUploadCoverSuccess(true);
+        setTimeout(() => setUploadCoverSuccess(false), 4000);
+      } else {
+        alert(json.message || 'Gagal mengupload cover ke Cloudflare R2.');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Terjadi kesalahan saat mengupload gambar ke R2.');
+    } finally {
+      setUploadingCover(false);
+      e.target.value = '';
     }
   };
 
@@ -534,20 +591,22 @@ export default function AdminAddManga() {
             </p>
           </div>
 
-          {/* Cover / Thumbnail URL */}
-          <div className="space-y-1.5 sm:col-span-2 min-w-0">
-            <label className="text-xs sm:text-sm font-semibold text-text-primary">
-              URL Cover / Thumbnail
-            </label>
-            <div className="flex items-center gap-3 min-w-0">
-              <input
-                name="thumb"
-                value={formData.thumb}
-                onChange={handleChange}
-                placeholder="https://.../thumb.webp"
-                className="w-full sm:flex-1 min-w-0 bg-bg-primary border border-border text-text-primary rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-sm focus:border-accent-red outline-none transition-all font-mono"
-              />
-              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl border border-border overflow-hidden flex-shrink-0 bg-bg-elevated flex items-center justify-center">
+          {/* Cover / Thumbnail URL & Local Upload */}
+          <div className="space-y-2 sm:col-span-2 min-w-0">
+            <div className="flex items-center justify-between">
+              <label className="text-xs sm:text-sm font-semibold text-text-primary">
+                Cover / Thumbnail Komik
+              </label>
+              {uploadCoverSuccess && (
+                <span className="text-[11px] font-semibold text-green-400 flex items-center gap-1">
+                  <CheckCircle2 className="w-3.5 h-3.5" /> Berhasil diupload ke Cloudflare R2!
+                </span>
+              )}
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 min-w-0">
+              {/* Preview Box */}
+              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl border border-border overflow-hidden flex-shrink-0 bg-bg-elevated flex items-center justify-center relative shadow-inner">
                 {formData.thumb ? (
                   /* eslint-disable-next-line @next/next/no-img-element */
                   <img
@@ -559,10 +618,51 @@ export default function AdminAddManga() {
                     }}
                   />
                 ) : (
-                  <ImageIcon className="w-5 h-5 text-text-muted" />
+                  <ImageIcon className="w-6 h-6 text-text-muted/50" />
+                )}
+                {uploadingCover && (
+                  <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                    <Loader2 className="w-5 h-5 text-accent-red animate-spin" />
+                  </div>
                 )}
               </div>
+
+              {/* Input URL */}
+              <div className="flex-1 min-w-0">
+                <input
+                  name="thumb"
+                  value={formData.thumb}
+                  onChange={handleChange}
+                  placeholder="https://... atau upload file dari perangkat"
+                  className="w-full min-w-0 bg-bg-primary border border-border text-text-primary rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-sm focus:border-accent-red outline-none transition-all font-mono"
+                />
+              </div>
+
+              {/* Upload Local Button */}
+              <label className="inline-flex items-center justify-center gap-2 px-4 py-2.5 sm:py-3 rounded-xl border border-border bg-bg-elevated hover:bg-bg-primary hover:border-accent-red/60 text-text-secondary hover:text-text-primary text-xs sm:text-sm font-bold transition-all cursor-pointer shadow-sm flex-shrink-0">
+                {uploadingCover ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin text-accent-red" />
+                    <span>Mengupload...</span>
+                  </>
+                ) : (
+                  <>
+                    <Upload className="w-4 h-4 text-accent-red" />
+                    <span>Upload Cover (R2)</span>
+                  </>
+                )}
+                <input
+                  type="file"
+                  accept="image/*"
+                  disabled={uploadingCover}
+                  onChange={handleCoverUpload}
+                  className="hidden"
+                />
+              </label>
             </div>
+            <p className="text-[11px] text-text-muted">
+              Bisa masukkan URL langsung atau klik <strong>Upload Cover (R2)</strong> untuk mengupload foto dari galeri/komputer ke Cloudflare R2 secara otomatis.
+            </p>
           </div>
 
           {/* Penulis */}

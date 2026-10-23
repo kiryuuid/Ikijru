@@ -2,7 +2,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import { ArrowLeft, BookOpen, Loader2, Save, Trash2, Plus, Image as ImageIcon, Edit } from 'lucide-react';
+import { ArrowLeft, BookOpen, Loader2, Save, Trash2, Plus, Image as ImageIcon, Edit, Upload, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 
 export default function AdminEditManga({ params }) {
@@ -13,6 +13,10 @@ export default function AdminEditManga({ params }) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
   const [chapters, setChapters] = useState([]);
+  
+  // Cover R2 upload state
+  const [uploadingCover, setUploadingCover] = useState(false);
+  const [uploadCoverSuccess, setUploadCoverSuccess] = useState(false);
   
   // States untuk modal/form Chapter
   const [showChapterForm, setShowChapterForm] = useState(false);
@@ -80,6 +84,58 @@ export default function AdminEditManga({ params }) {
       setFormData(prev => ({ ...prev, metadata: { ...prev.metadata, [metaKey]: value } }));
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
+    }
+  };
+
+  const handleCoverUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('Hanya berkas gambar yang diperbolehkan!');
+      return;
+    }
+
+    if (!user?.googleId) {
+      alert('Sesi admin tidak valid. Silakan login ulang.');
+      return;
+    }
+
+    setUploadingCover(true);
+    setUploadCoverSuccess(false);
+
+    try {
+      const data = new FormData();
+      data.append('file', file);
+      if (formData.slug) {
+        data.append('slug', formData.slug);
+      }
+
+      const res = await fetch('/api/admin/upload-cover', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${user.googleId}`,
+        },
+        body: data,
+      });
+
+      const json = await res.json();
+      if (json.success && json.data?.url) {
+        setFormData((prev) => ({
+          ...prev,
+          thumb: json.data.url,
+        }));
+        setUploadCoverSuccess(true);
+        setTimeout(() => setUploadCoverSuccess(false), 4000);
+      } else {
+        alert(json.message || 'Gagal mengupload cover ke Cloudflare R2.');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Terjadi kesalahan saat mengupload gambar ke R2.');
+    } finally {
+      setUploadingCover(false);
+      e.target.value = '';
     }
   };
 
@@ -225,24 +281,56 @@ export default function AdminEditManga({ params }) {
                 <input required name="slug" value={formData.slug} onChange={handleChange} className="w-full min-w-0 bg-bg-primary border border-border text-text-primary rounded-xl px-4 py-2 focus:border-accent-red outline-none font-mono text-sm" />
               </div>
               
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm font-semibold text-text-primary block mb-1">Thumbnail Cover</label>
-                  <div className="flex gap-2 items-center">
-                    <div className="w-11 h-11 rounded-lg bg-bg-primary border border-border overflow-hidden flex-shrink-0 flex items-center justify-center">
-                      {formData.thumb ? (
-                        <img src={formData.thumb} alt="Cover" className="w-full h-full object-cover" onError={(e) => { e.target.style.display = 'none'; }} />
-                      ) : (
-                        <ImageIcon className="w-5 h-5 text-text-muted/40" />
-                      )}
-                    </div>
-                    <input name="thumb" value={formData.thumb} onChange={handleChange} placeholder="https://..." className="w-full min-w-0 bg-bg-primary border border-border text-text-primary rounded-xl px-3 py-2 text-sm focus:border-accent-red outline-none" />
+              {/* Thumbnail Cover & Local Upload */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <label className="text-sm font-semibold text-text-primary block">Thumbnail Cover</label>
+                  {uploadCoverSuccess && (
+                    <span className="text-[11px] font-semibold text-green-400 flex items-center gap-1">
+                      <CheckCircle2 className="w-3.5 h-3.5" /> Berhasil diupload ke R2!
+                    </span>
+                  )}
+                </div>
+                <div className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center">
+                  <div className="w-11 h-11 rounded-lg bg-bg-primary border border-border overflow-hidden flex-shrink-0 flex items-center justify-center relative shadow-inner">
+                    {formData.thumb ? (
+                      <img src={formData.thumb} alt="Cover" className="w-full h-full object-cover" onError={(e) => { e.target.style.display = 'none'; }} />
+                    ) : (
+                      <ImageIcon className="w-5 h-5 text-text-muted/40" />
+                    )}
+                    {uploadingCover && (
+                      <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                        <Loader2 className="w-4 h-4 text-accent-red animate-spin" />
+                      </div>
+                    )}
                   </div>
+                  <input name="thumb" value={formData.thumb} onChange={handleChange} placeholder="https://... atau upload file" className="w-full flex-1 min-w-0 bg-bg-primary border border-border text-text-primary rounded-xl px-3 py-2 text-sm focus:border-accent-red outline-none font-mono" />
+                  <label className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-border bg-bg-elevated hover:bg-bg-primary hover:border-accent-red/60 text-text-secondary hover:text-text-primary text-xs font-bold transition-all cursor-pointer shadow-sm flex-shrink-0">
+                    {uploadingCover ? (
+                      <>
+                        <Loader2 className="w-3.5 h-3.5 animate-spin text-accent-red" />
+                        <span>Mengupload...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="w-3.5 h-3.5 text-accent-red" />
+                        <span>Upload R2</span>
+                      </>
+                    )}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      disabled={uploadingCover}
+                      onChange={handleCoverUpload}
+                      className="hidden"
+                    />
+                  </label>
                 </div>
-                <div>
-                  <label className="text-sm font-semibold text-text-primary block mb-1">Penulis / Author</label>
-                  <input name="metadata.author" value={formData.metadata.author} onChange={handleChange} placeholder="Nama Author" className="w-full min-w-0 bg-bg-primary border border-border text-text-primary rounded-xl px-4 py-2 focus:border-accent-red outline-none" />
-                </div>
+              </div>
+
+              <div>
+                <label className="text-sm font-semibold text-text-primary block mb-1">Penulis / Author</label>
+                <input name="metadata.author" value={formData.metadata.author} onChange={handleChange} placeholder="Nama Author" className="w-full min-w-0 bg-bg-primary border border-border text-text-primary rounded-xl px-4 py-2 focus:border-accent-red outline-none" />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

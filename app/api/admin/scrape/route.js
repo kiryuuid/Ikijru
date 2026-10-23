@@ -174,7 +174,7 @@ async function scrapeMangaDetails(url) {
         formattedTitle = rawTitle;
       }
 
-      // 3. Format Slug URL -> Berdasarkan link asli doujindesu (contoh: obasan-no-seikyouiku-chapter-seikyouiku-chapter-1 atau pet-beastman-chapter-1)
+      // 3. Format Slug URL -> Berdasarkan link asli doujindesu (contoh: hero-manager-chapter-02)
       let linkSlug = '';
       try {
         const chUrl = new URL(link);
@@ -184,13 +184,17 @@ async function scrapeMangaDetails(url) {
         linkSlug = '';
       }
 
-      const targetEnd = `chapter-${chapterNumStr || parsedNum}`.toLowerCase();
-      let formattedSlug = linkSlug.toLowerCase();
+      let formattedSlug = linkSlug.toLowerCase().trim();
+      // Bersihkan jika ada duplikasi -chapter-X-chapter-X
+      formattedSlug = formattedSlug.replace(/(-chapter-\d+)-chapter-\d+$/i, '$1');
+
       if (!formattedSlug) {
-        formattedSlug = `${slug}-${targetEnd}`;
-      } else if (!formattedSlug.endsWith(targetEnd)) {
-        formattedSlug = `${formattedSlug}-${targetEnd}`;
+        const num = chapterNumStr || parsedNum || '1';
+        formattedSlug = `${slug}-chapter-${num}`;
+      } else if (slug && !formattedSlug.includes(slug)) {
+        formattedSlug = `${slug}-${formattedSlug}`;
       }
+
       formattedSlug = formattedSlug
         .replace(/[^a-z0-9.-]+/g, '-')
         .replace(/(^-|-$)+/g, '');
