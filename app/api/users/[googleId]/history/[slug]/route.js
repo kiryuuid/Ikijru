@@ -9,11 +9,11 @@ export async function DELETE(request, { params }) {
   try {
     await dbConnect();
     const { googleId, slug } = params;
-    const user = await User.findOne({ googleId });
-    if (!user) return errorResponse('User not found', 404);
-
-    user.history = user.history.filter(item => item.slug !== slug);
-    await user.save();
+    const result = await User.updateOne(
+      { googleId },
+      { $pull: { history: { slug } } }
+    );
+    if (result.matchedCount === 0) return errorResponse('User not found', 404);
 
     return successResponse({ message: 'Riwayat bacaan berhasil dihapus' });
   } catch (err) {

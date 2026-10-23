@@ -216,76 +216,60 @@ export default function HistoryList() {
   }, [user, authLoading]);
 
   const fetchHistory = useCallback(async () => {
+    const userId = user?.googleId || user?.uid;
+    if (!userId) return;
+
     setLoading(true);
     try {
-      const res = await getUserHistory(user.googleId);
+      const res = await getUserHistory(userId);
       const rawData = Array.isArray(res.data) ? res.data : [];
-
-      // Logic Autodelete: Filter out history older than 24 hours
-      const ONE_DAY_MS = 24 * 60 * 60 * 1000;
-      const now = Date.now();
-
-      const validHistory = [];
-      const expiredSlugs = [];
-
-      rawData.forEach(item => {
-        if (!item.lastRead) {
-           // Jika tidak ada lastRead, kita anggap baru
-           validHistory.push(item);
-           return;
-        }
-        const diff = now - new Date(item.lastRead).getTime();
-        if (diff > ONE_DAY_MS) {
-           expiredSlugs.push(item.slug);
-        } else {
-           validHistory.push(item);
-        }
-      });
-
-      // Update state hanya dengan riwayat yang valid (< 24 jam)
-      setHistory(validHistory);
-
-      // Secara asinkron (background) hapus yang expired dari backend
-      // Digunakan untuk menjaga server db tetap ringan
-      if (expiredSlugs.length > 0) {
-        expiredSlugs.forEach(slug => {
-          removeFromHistory(user.googleId, slug).catch(err => {
-            console.warn(`Gagal hapus riwayat usang untuk ${slug}:`, err);
-          });
-        });
-        console.log(`[History] Hapus ${expiredSlugs.length} item lebih dari 24 jam.`);
-      }
-
+      setHistory(rawData);
     } catch (err) {
       console.error('[History] fetch error:', err);
       setHistory([]);
     } finally {
       setLoading(false);
     }
-  }, [user?.googleId]);
+  }, [user?.googleId, user?.uid]);
 
   // Hapus satu item
   const handleRemove = async (slug) => {
+    const userId = user?.googleId || user?.uid;
+    if (!userId || !slug) return;
+
     setRemoving(slug);
     try {
-      await removeFromHistory(user.googleId, slug);
+      const res = await removeFromHistory(userId, slug);
+      if (res && res.success === false) throw new Error(res.error || 'Gagal menghapus');
       setHistory(prev => prev.filter(h => h.slug !== slug));
     } catch (err) {
       console.error('[History] remove error:', err);
+      alert('Gagal menghapus riwayat komik ini. Silakan coba lagi.');
     } finally {
       setRemoving(null);
     }
   };
 
-  // Hapus semua
+  // Hapus semua (sesuai tab filter aktif)
   const handleClearAll = async () => {
+    const userId = user?.googleId || user?.uid;
+    if (!userId) return;
+
     setConfirm(null);
     setClearingAll(true);
     try {
-      await clearHistory(user.googleId);
-      setHistory([]);
+      const filterType = selectedType !== 'all' ? selectedType : null;
+      const res = await clearHistory(userId, filterType);
+      if (res && res.success === false) throw new Error(res.error || 'Gagal menghapus');
+
+      if (filterType) {
+        setHistory(prev => prev.filter(h => h.type?.toLowerCase() !== filterType.toLowerCase()));
+      } else {
+        setHistory([]);
+      }
     } catch (err) {
       console.error('[History] clear error:', err);
+      alert('Gagal membersihkan riwayat. Silakan coba lagi.');
     } finally {
       setClearingAll(false);
     }
@@ -326,7 +310,11 @@ export default function HistoryList() {
       {/* Dialog konfirmasi */}
       {confirm?.type === 'all' && (
         <ConfirmDialog
-          message="Semua riwayat baca akan dihapus permanen."
+          message={
+            selectedType !== 'all'
+              ? `Semua riwayat bacaan ${selectedType.toUpperCase()} akan dihapus permanen.`
+              : 'Semua riwayat baca akan dihapus permanen.'
+          }
           onConfirm={handleClearAll}
           onCancel={() => setConfirm(null)}
         />

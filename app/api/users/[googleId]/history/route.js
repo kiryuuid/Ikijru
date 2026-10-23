@@ -13,7 +13,19 @@ export async function GET(request, { params }) {
     const user = await User.findOne({ googleId });
     if (!user) return errorResponse('User not found', 404);
 
-    const historyItems = user.history || [];
+    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+
+    // Bersihkan riwayat usang (> 24 jam) di DB secara atomik
+    User.updateOne(
+      { googleId },
+      { $pull: { history: { lastRead: { $lt: oneDayAgo } } } }
+    ).catch(err => console.warn('[History Cleanup Error]:', err.message));
+
+    // Filter hanya item yang masih berlaku (< 24 jam)
+    const historyItems = (user.history || []).filter(item => {
+      if (!item.lastRead) return true;
+      return new Date(item.lastRead).getTime() >= oneDayAgo.getTime();
+    });
     const slugs = historyItems.map(h => h.slug).filter(Boolean);
 
     let needsSave = false;
@@ -120,16 +132,13 @@ export async function DELETE(request, { params }) {
     const { googleId } = params;
     const { searchParams } = new URL(request.url);
     const type = searchParams.get('type');
-    const user = await User.findOne({ googleId });
-    if (!user) return errorResponse('User not found', 404);
+    const updateQuery = type
+      ? { $pull: { history: { type: new RegExp(`^${type}$`, 'i') } } }
+      : { $set: { history: [] } };
 
-    if (type) {
-      user.history = user.history.filter(item => item.type !== type);
-    } else {
-      user.history = [];
-    }
+    const result = await User.updateOne({ googleId }, updateQuery);
+    if (result.matchedCount === 0) return errorResponse('User not found', 404);
 
-    await user.save();
     return successResponse({ message: 'Riwayat bacaan berhasil dibersihkan' });
   } catch (err) {
     return errorResponse(err.message);

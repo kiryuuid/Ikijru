@@ -28,23 +28,23 @@ export async function GET(request) {
           Manga.find()
             .select('title slug thumb views metadata')
             .sort({ views: -1 })
-            .limit(10)
+            .limit(12)
             .lean(),
           // Gunakan $in dengan exact values agar pakai index metadata.type
           Manga.find({ 'metadata.type': { $in: ['Manhwa', 'manhwa'] } })
             .select('title slug thumb metadata updatedAt')
             .sort({ updatedAt: -1 })
-            .limit(10)
+            .limit(12)
             .lean(),
           Manga.find({ 'metadata.type': { $in: ['Manga', 'manga'] } })
             .select('title slug thumb metadata updatedAt')
             .sort({ updatedAt: -1 })
-            .limit(10)
+            .limit(12)
             .lean(),
           Manga.find({ 'metadata.type': { $in: ['Doujinshi', 'doujinshi'] } })
             .select('title slug thumb metadata updatedAt')
             .sort({ updatedAt: -1 })
-            .limit(10)
+            .limit(12)
             .lean(),
         ]);
 

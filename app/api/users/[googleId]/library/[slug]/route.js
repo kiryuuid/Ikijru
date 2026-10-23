@@ -7,11 +7,11 @@ export async function DELETE(request, { params }) {
   try {
     await dbConnect();
     const { googleId, slug } = params;
-    const user = await User.findOne({ googleId });
-    if (!user) return errorResponse('User not found', 404);
-
-    user.library = user.library.filter(item => item.slug !== slug);
-    await user.save();
+    const result = await User.updateOne(
+      { googleId },
+      { $pull: { library: { slug } } }
+    );
+    if (result.matchedCount === 0) return errorResponse('User not found', 404);
 
     return successResponse({ message: 'Manga berhasil dihapus dari library' });
   } catch (err) {

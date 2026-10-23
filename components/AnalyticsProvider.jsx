@@ -13,7 +13,13 @@ export default function AnalyticsProvider({ children }) {
 
   useEffect(() => {
     const url = pathname + (searchParams.toString() ? `?${searchParams.toString()}` : '');
-    trackPageView(document.title || pathname, url);
+    
+    // Beri jeda singkat agar Next.js selesai memperbarui <title> di dokumen
+    const timer = setTimeout(() => {
+      trackPageView(document.title || pathname, url);
+    }, 150);
+
+    return () => clearTimeout(timer);
   }, [pathname, searchParams]);
 
   return children;

@@ -47,11 +47,12 @@ export async function DELETE(request, { params }) {
   try {
     await dbConnect();
     const { googleId } = params;
-    const user = await User.findOne({ googleId });
-    if (!user) return errorResponse('User not found', 404);
+    const result = await User.updateOne(
+      { googleId },
+      { $set: { library: [] } }
+    );
+    if (result.matchedCount === 0) return errorResponse('User not found', 404);
 
-    user.library = [];
-    await user.save();
     return successResponse({ message: 'Library berhasil dikosongkan' });
   } catch (err) {
     return errorResponse(err.message);

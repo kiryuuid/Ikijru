@@ -13,7 +13,7 @@ export const revalidate = 300;
 
 export const metadata = {
   title: `${process.env.NEXT_PUBLIC_SITE_NAME} - Baca & Download Doujinshi Bahasa Indonesia`,
-  description: `Baca & Download Doujinshi Bahasa Indonesia Update chapter terbaru setiap hari di ${process.env.NEXT_PUBLIC_SITE_NAME}!`,
+  description: `${process.env.NEXT_PUBLIC_SITE_NAME} adalah website download dan baca doujin bahasa indonesia terbaru dan terlengkap. Kamu bisa membaca berbagai macam doujin secara gratis di ${process.env.NEXT_PUBLIC_SITE_NAME}!`,
 };
 
 export default async function HomePage() {
@@ -69,7 +69,7 @@ export default async function HomePage() {
         {/* Manhwa */}
         {manhwas.length > 0 && (
           <MangaSection
-            title="MANHWA POPULER"
+            title="MANHWA"
             mangas={manhwas}
             href="/manga?type=manhwa"
           />
@@ -81,7 +81,7 @@ export default async function HomePage() {
         {/* Doujinshi */}
         {doujinshis.length > 0 && (
           <MangaSection
-            title="DOUJINSHI TERBARU"
+            title="DOUJINSHI"
             mangas={doujinshis}
             href="/manga?type=doujinshi"
           />
@@ -90,7 +90,7 @@ export default async function HomePage() {
         {/* Manga */}
         {mangas.length > 0 && (
           <MangaSection
-            title="MANGA JEPANG"
+            title="MANGA"
             mangas={mangas}
             href="/manga?type=manga"
           />

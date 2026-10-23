@@ -352,7 +352,7 @@ export default async function MangaDetailPage({ params }) {
 
             {/* Bookmark Button */}
             <div className="w-full">
-              <BookmarkButton manga={manga} />
+              <BookmarkButton manga={manga} chapters={chapters} />
             </div>
 
             {/* Metadata Specs Box */}
@@ -430,7 +430,7 @@ export default async function MangaDetailPage({ params }) {
 
             {/* Mobile-Only Bookmark */}
             <div className="md:hidden">
-              <BookmarkButton manga={manga} />
+              <BookmarkButton manga={manga} chapters={chapters} />
             </div>
 
             {/* Genres / Tags */}

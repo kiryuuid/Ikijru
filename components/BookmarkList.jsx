@@ -11,6 +11,7 @@ import {
   calcBookmarkStats,
   READING_STATUS,
 } from '@/lib/bookmarks';
+import { trackBookmarkRemove } from '@/lib/analytics';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
@@ -45,10 +46,13 @@ export default function BookmarkList() {
   }, [user, authLoading]);
 
   const fetchBookmarks = async () => {
+    const userId = user?.googleId || user?.uid;
+    if (!userId) return;
+
     setLoading(true);
     try {
       // getUserBookmarks sudah me-normalisasi data ke format yang dipakai komponen
-      const data = await getUserBookmarks(user.googleId);
+      const data = await getUserBookmarks(userId);
       setBookmarks(data);
     } catch (err) {
       console.error('[BookmarkList] fetch error:', err);
@@ -58,26 +62,35 @@ export default function BookmarkList() {
   };
 
   const handleRemove = async (mangaSlug) => {
+    const userId = user?.googleId || user?.uid;
+    if (!userId || !mangaSlug) return;
+
     setRemoving(mangaSlug);
     try {
-      await removeBookmark(user.googleId, mangaSlug);
+      await removeBookmark(userId, mangaSlug);
       setBookmarks(prev => prev.filter(b => b.slug !== mangaSlug));
+      trackBookmarkRemove(mangaSlug);
     } catch (err) {
       console.error('[BookmarkList] remove error:', err);
+      alert('Gagal menghapus bookmark. Silakan coba lagi.');
     } finally {
       setRemoving(null);
     }
   };
 
   const handleStatusChange = async (mangaSlug, newStatus) => {
+    const userId = user?.googleId || user?.uid;
+    if (!userId || !mangaSlug) return;
+
     setStatusMenu(null);
     try {
-      await updateReadingStatus(user.googleId, mangaSlug, newStatus);
+      await updateReadingStatus(userId, mangaSlug, newStatus);
       setBookmarks(prev =>
         prev.map(b => b.slug === mangaSlug ? { ...b, readingStatus: newStatus } : b)
       );
     } catch (err) {
       console.error('[BookmarkList] update status error:', err);
+      alert('Gagal memperbarui status. Silakan coba lagi.');
     }
   };
 
@@ -113,7 +126,7 @@ export default function BookmarkList() {
             </div>
             <div className="flex items-center gap-2">
               <Link
-                href={`/user/${user?.googleId}`}
+                href={`/user/${user?.googleId || user?.uid || ''}`}
                 className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-border text-text-muted text-xs font-semibold hover:border-accent-red/50 hover:text-text-primary transition-colors"
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-3.5 h-3.5">

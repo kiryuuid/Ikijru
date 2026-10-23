@@ -133,11 +133,11 @@ function UserMenu({ user, logout }) {
             </div>
             <Link href={`/user/${user.googleId}`} onClick={() => setOpen(false)} className="flex items-center gap-3 px-4 py-3 text-text-secondary hover:bg-bg-elevated hover:text-text-primary transition-colors text-sm">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
-              Profil Saya
+              Profil
             </Link>
             <Link href="/bookmarks" onClick={() => setOpen(false)} className="flex items-center gap-3 px-4 py-3 text-text-secondary hover:bg-bg-elevated hover:text-text-primary transition-colors text-sm">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z" /></svg>
-              Bookmark Saya
+              Bookmark
             </Link>
             <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-3 text-red-400 hover:bg-red-900/20 transition-colors text-sm">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></svg>
@@ -336,7 +336,7 @@ function SmartSearchModal({ open, onClose }) {
         {/* Hint */}
         {!searched && (
           <p className="text-text-muted text-xs text-center mt-3">
-             Ketik untuk mencari • Tekan Enter untuk hasil lengkap
+            Ketik untuk mencari • Tekan Enter untuk hasil lengkap
           </p>
         )}
       </div>
@@ -418,7 +418,7 @@ export default function Navbar() {
 
   const NAV_ITEMS = [
     { href: '/', icon: HomeIcon, label: 'Home' },
-    { href: '/manga', icon: GridIcon, label: 'Semua Komik' },
+    { href: '/manga', icon: GridIcon, label: 'All Manga' },
     { href: '/genres', icon: GenreIcon, label: 'Genre' },
     { href: '/bookmarks', icon: BookmarkIcon, label: 'Tersimpan' },
     { href: '/history', icon: HistoryIcon, label: 'Riwayat' },
@@ -450,11 +450,10 @@ export default function Navbar() {
                   <Link
                     key={href}
                     href={needsAuth && !user ? '/login' : href}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs lg:text-sm font-bold transition-all relative ${
-                      active
+                    className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs lg:text-sm font-bold transition-all relative ${active
                         ? 'bg-accent-red/10 text-accent-red shadow-sm'
                         : 'text-text-secondary hover:text-text-primary hover:bg-bg-elevated'
-                    }`}
+                      }`}
                   >
                     <Icon active={active} />
                     <span>{label}</span>
@@ -501,7 +500,7 @@ export default function Navbar() {
                 className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-accent-red/30 bg-accent-red/10 text-accent-red hover:bg-accent-red hover:text-white transition-all text-xs font-bold shadow-sm"
                 title="Buka Admin Panel"
               >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-3.5 h-3.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-3.5 h-3.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
                 <span>Admin</span>
               </Link>
             )}
@@ -540,7 +539,7 @@ export default function Navbar() {
                             <div key={i} className={`p-4 border-b border-border hover:bg-bg-elevated transition-colors ${!notif.isRead ? 'bg-accent-red/5' : ''}`}>
                               <p className="text-xs font-bold text-text-primary mb-1">{notif.title}</p>
                               <p className="text-[11px] text-text-secondary leading-relaxed">{notif.message}</p>
-                              <p className="text-[9px] text-text-muted mt-2">{new Date(notif.createdAt).toLocaleDateString('id-ID', {day: 'numeric', month: 'short', hour: '2-digit', minute:'2-digit'})}</p>
+                              <p className="text-[9px] text-text-muted mt-2">{new Date(notif.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</p>
                             </div>
                           ))
                         )}
