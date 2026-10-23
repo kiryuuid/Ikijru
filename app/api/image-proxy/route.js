@@ -72,6 +72,14 @@ export async function GET(request) {
     return new Response('Host not allowed', { status: 403 });
   }
 
+  const edgeProxy = (process.env.NEXT_PUBLIC_IMAGE_PROXY_URL || 'https://api-imagesme-dpcfela3jjz4.edgeone.dev').replace(/\/+$/, '');
+  const isDirect = searchParams.get('direct') === '1';
+
+  // Alihkan langsung ke EdgeOne proxy untuk menghemat bandwidth serverless
+  if (edgeProxy && !isDirect) {
+    return Response.redirect(`${edgeProxy}/?url=${encodeURIComponent(normalized)}`, 307);
+  }
+
   try {
     // Tentukan referer terbaik berdasarkan target host / path
     let primaryReferer = 'https://desu.photos/';

@@ -97,10 +97,18 @@ function ProtectedImage({ src, alt, pageNum }) {
   );
 }
 
+const IMAGE_PROXY_BASE = (process.env.NEXT_PUBLIC_IMAGE_PROXY_URL || 'https://api-imagesme-dpcfela3jjz4.edgeone.dev').replace(/\/+$/, '');
+
 function normalizeChapterImageUrl(rawUrl) {
   if (!rawUrl) return '';
 
   let url = String(rawUrl).trim();
+
+  // Cegah double proxy
+  if (url.includes('edgeone.dev') || url.includes('/api/image-proxy')) {
+    return url;
+  }
+
   url = url.replace(
     /^https?:\/\/cdn\.manhwature\.com\/desu\.photos\//i,
     'https://desu.photos/'
@@ -125,7 +133,7 @@ function normalizeChapterImageUrl(rawUrl) {
     /doujindesu/i.test(url) ||
     /datagambar/i.test(url)
   ) {
-    return `/api/image-proxy?url=${encodeURIComponent(url)}`;
+    return `${IMAGE_PROXY_BASE}/?url=${encodeURIComponent(url)}`;
   }
 
   return url;
