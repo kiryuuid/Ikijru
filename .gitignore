@@ -1,0 +1,33 @@
+# dependencies
+node_modules/
+/.pnp
+.pnp.js
+
+# next.js build output
+.next/
+out/
+build/
+
+# environment variables (SANGAT PENTING: JANGAN DI-PUSH KE GIT)
+.env
+.env*.local
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# archives & zip
+*.zip
+
+# logs & caches
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.DS_Store
+*.pem
+.vercel
+.netlify
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
