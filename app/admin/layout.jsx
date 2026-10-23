@@ -72,7 +72,7 @@ export default function AdminLayout({ children }) {
             <h1 className="text-xl font-display font-bold text-accent-red tracking-wide">
               ADMIN PANEL
             </h1>
-            <p className="text-xs text-text-muted mt-1">DoujinDesu Control Center</p>
+            <p className="text-xs text-text-muted mt-1">{process.env.NEXT_PUBLIC_SITE_NAME || 'Pojokmanga'} Control Center</p>
           </div>
           <button onClick={() => setIsSidebarOpen(false)} className="lg:hidden text-text-muted hover:text-text-primary">
             <X className="w-6 h-6" />

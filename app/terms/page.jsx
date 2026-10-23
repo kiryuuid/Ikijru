@@ -1,9 +1,11 @@
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
+const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || 'Pojokmanga';
+
 export const metadata = {
   title: 'Terms of Service',
-  description: 'Syarat dan Ketentuan layanan Doujindesu.',
+  description: `Syarat dan Ketentuan layanan ${SITE_NAME}.`,
 };
 
 export default function TermsOfService() {
@@ -36,7 +38,7 @@ export default function TermsOfService() {
               1. Penerimaan Syarat
             </h2>
             <p>
-              Dengan mengakses dan menggunakan website doujindesu, kamu setuju untuk terikat oleh Syarat dan Ketentuan Layanan ini serta Kebijakan Privasi kami. Jika kamu tidak setuju, mohon untuk tidak menggunakan layanan ini.
+              Dengan mengakses dan menggunakan website {SITE_NAME}, kamu setuju untuk terikat oleh Syarat dan Ketentuan Layanan ini serta Kebijakan Privasi kami. Jika kamu tidak setuju, mohon untuk tidak menggunakan layanan ini.
             </p>
           </div>
 
@@ -92,8 +94,8 @@ export default function TermsOfService() {
             </h2>
             <p>
               Untuk pertanyaan terkait ketentuan layanan, silakan hubungi kami melalui:{' '}
-              <a href="mailto:support-doujindesu@googlegroups.com" className="text-accent-red font-semibold hover:underline">
-                support-doujindesu@googlegroups.com
+              <a href={`mailto:support-${SITE_NAME.toLowerCase()}@googlegroups.com`} className="text-accent-red font-semibold hover:underline">
+                support-{SITE_NAME.toLowerCase()}@googlegroups.com
               </a>
             </p>
           </div>

@@ -95,6 +95,8 @@ function TypeIcon({ type }) {
 }
 
 export default function ChangelogPage() {
+  const siteName = process.env.NEXT_PUBLIC_SITE_NAME || 'Pojokmanga';
+
   return (
     <div className="min-h-screen bg-bg-primary">
       <Navbar />
@@ -114,7 +116,7 @@ export default function ChangelogPage() {
             </div>
             <h1 className="font-display text-2xl text-text-primary tracking-widest">CHANGELOG</h1>
           </div>
-          <p className="text-text-muted text-xs mt-1 ml-12">Riwayat pembaruan dan perbaikan Doujindesu</p>
+          <p className="text-text-muted text-xs mt-1 ml-12">Riwayat pembaruan dan perbaikan {siteName}</p>
         </div>
 
         {/* Legend */}

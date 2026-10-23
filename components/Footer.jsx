@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 export default function Footer({ className = '' }) {
   const currentYear = new Date().getFullYear();
-  const siteName = process.env.NEXT_PUBLIC_SITE_NAME || 'Doujindesu';
+  const siteName = process.env.NEXT_PUBLIC_SITE_NAME || 'Pojokmanga';
 
   return (
     <footer className={`border-t border-border mt-8 md:mt-12 py-6 md:py-8 bg-bg-secondary/40 ${className}`}>

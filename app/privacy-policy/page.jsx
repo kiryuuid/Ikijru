@@ -1,9 +1,11 @@
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
+const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || 'Pojokmanga';
+
 export const metadata = {
   title: 'Privacy Policy',
-  description: 'Kebijakan Privasi untuk layanan Doujindesu.',
+  description: `Kebijakan Privasi untuk layanan ${SITE_NAME}.`,
 };
 
 export default function PrivacyPolicy() {
@@ -46,7 +48,7 @@ export default function PrivacyPolicy() {
               Data yang kami dapatkan dari Google hanya digunakan secara eksklusif untuk:
             </p>
             <ul className="list-disc pl-5 space-y-1.5 text-text-secondary">
-              <li>Membuat dan mengelola akun pengguna kamu di website doujindesu.</li>
+              <li>Membuat dan mengelola akun pengguna kamu di website {SITE_NAME}.</li>
               <li>Menyimpan preferensi membaca, riwayat, dan bookmark komik kamu.</li>
               <li>Mengidentifikasi sesi login kamu agar tetap aman.</li>
             </ul>
@@ -79,8 +81,8 @@ export default function PrivacyPolicy() {
             </h2>
             <p>
               Jika kamu memiliki pertanyaan tentang Kebijakan Privasi ini, silakan hubungi kami di:{' '}
-              <a href="mailto:support-doujindesu@googlegroups.com" className="text-accent-red font-semibold hover:underline">
-                support-doujindesu@googlegroups.com
+              <a href={`mailto:support-${SITE_NAME.toLowerCase()}@googlegroups.com`} className="text-accent-red font-semibold hover:underline">
+                support-{SITE_NAME.toLowerCase()}@googlegroups.com
               </a>
             </p>
           </div>

@@ -1132,7 +1132,7 @@ export default function PublicProfile({ userId }) {
                   Terima kasih sudah berlangganan Premium!
                 </p>
                 <p className="text-[11px] text-purple-200/80 mt-1 leading-relaxed">
-                  Dukunganmu sangat berarti bagi kami — membantu meringankan biaya server agar <span className="text-white font-semibold">Doujindesu</span> tetap bisa berjalan untuk semua orang. 🙏
+                  Dukunganmu sangat berarti bagi kami — membantu meringankan biaya server agar <span className="text-white font-semibold">{process.env.NEXT_PUBLIC_SITE_NAME || 'Pojokmanga'}</span> tetap bisa berjalan untuk semua orang. 🙏
                 </p>
                 <div className="flex items-center gap-2 mt-2 flex-wrap">
                   <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-yellow-500/20 border border-yellow-500/40 text-yellow-300">

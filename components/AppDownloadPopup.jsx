@@ -163,7 +163,7 @@ export default function AppDownloadPopup() {
                       fontFamily: 'var(--font-nunito), Nunito, sans-serif',
                     }}
                   >
-                    Download Aplikasi {process.env.NEXT_PUBLIC_SITE_NAME || 'Doujindesu'} 📲
+                    Download Aplikasi {process.env.NEXT_PUBLIC_SITE_NAME || 'Pojokmanga'} 📲
                   </h3>
                   <p
                     style={{
