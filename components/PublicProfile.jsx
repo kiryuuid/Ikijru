@@ -166,156 +166,161 @@ function AccountInfoCard({ profile, onClaimTrial, onUpgradePremium, onVerifyDire
         {/* Divider */}
         <div className="h-px bg-border" />
 
-        {/* Status Premium */}
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex items-center gap-1.5">
-            <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5 text-yellow-400 flex-shrink-0">
-              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-            </svg>
-            <span className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Status Premium</span>
-          </div>
-          <div className="text-right flex flex-col items-end">
-            {profile?.isAdmin ? (
-              <span className="text-[11px] font-bold text-red-400">Admin (Unlimited)</span>
-            ) : profile?.isPremium && !premiumExpired ? (
-              <div>
-                <span className="text-[11px] font-bold text-yellow-400">Aktif</span>
-                {premiumLabel && (
-                  <p className="text-[10px] text-text-muted mt-0.5">
-                    {premiumDaysLeft !== null ? `${premiumDaysLeft} hari lagi · ` : ''}Exp: {premiumLabel}
-                  </p>
-                )}
-              </div>
-            ) : premiumExpired ? (
-              <div>
-                <span className="text-[11px] font-bold text-red-400">Kadaluarsa</span>
-                {premiumLabel && <p className="text-[10px] text-text-muted mt-0.5">{premiumLabel}</p>}
-              </div>
-            ) : (
-              <span className="text-[11px] text-text-muted">Tidak Aktif</span>
-            )}
-
-            {/* BUTTON CLAIM TRIAL */}
-            {profile && !profile.hasUsedTrial && !profile.isAdmin && (!profile.isPremium || premiumExpired) && (
-              <button
-                onClick={onClaimTrial}
-                className="mt-2 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg shadow-[0_0_15px_rgba(234,179,8,0.3)] transition-all active:scale-95 flex items-center gap-1"
-              >
-                <span>🎁 Klaim Trial 2 Hari GRATIS!</span>
-              </button>
-            )}
-            {/* BUTTON UPGRADE PREMIUM */}
-            {profile && !profile.isAdmin && (!profile.isPremium || premiumExpired) && (
-              <button
-                onClick={onUpgradePremium}
-                className="mt-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg shadow-[0_0_15px_rgba(139,92,246,0.3)] transition-all active:scale-95 flex items-center gap-1"
-              >
-                <svg viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
-                <span>Upgrade Premium – Rp3.000 / 7 Hari</span>
-              </button>
-            )}
-            {/* BUTTON VERIFIKASI LANGSUNG — muncul jika ada pending order */}
-            {profile?.pendingPremiumOrders?.length > 0 && (!profile.isPremium || premiumExpired) && (
-              <button
-                onClick={() => onVerifyDirect(profile.pendingPremiumOrders.at(-1).orderId, setVerifyingDirect)}
-                disabled={verifyingDirect}
-                className="mt-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 disabled:opacity-60 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg shadow-[0_0_15px_rgba(16,185,129,0.3)] transition-all active:scale-95 flex items-center gap-1"
-              >
-                {verifyingDirect ? (
-                  <><div className="w-2.5 h-2.5 border border-white/40 border-t-white rounded-full animate-spin" /><span>Memverifikasi...</span></>
-                ) : (
-                  <><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-3 h-3"><polyline points="20 6 9 17 4 12" /></svg><span>Cek Status Pembayaran</span></>
-                )}
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* Divider */}
-        <div className="h-px bg-border" />
-
-        {/* Verifikasi Kode Manual + History — hanya tampil jika belum premium aktif */}
-        {!profile?.isAdmin && (!profile?.isPremium || premiumExpired) && (
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
+        {/* STATUS PREMIUM, TRIAL, UPGRADE, & VERIFIKASI PEMBAYARAN (DISEMBUNYIKAN) */}
+        {false && (
+          <>
+            {/* Status Premium */}
+            <div className="flex items-start justify-between gap-3">
               <div className="flex items-center gap-1.5">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-3.5 h-3.5 text-green-400 flex-shrink-0">
-                  <polyline points="20 6 9 17 4 12" />
+                <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5 text-yellow-400 flex-shrink-0">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
                 </svg>
-                <span className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Verifikasi Kode Pembayaran</span>
+                <span className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Status Premium</span>
               </div>
-              {pendingOrders.length > 0 && (
-                <button
-                  onClick={() => setShowOrderHistory(v => !v)}
-                  className="text-[10px] text-blue-400 hover:text-blue-300 font-bold flex items-center gap-1 transition-colors"
-                >
-                  {showOrderHistory ? 'Sembunyikan' : `Riwayat (${pendingOrders.length})`}
-                </button>
-              )}
-            </div>
-
-            {/* Input kode manual */}
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={manualOrderId}
-                onChange={e => setManualOrderId(e.target.value.trim())}
-                placeholder="Tempel kode order di sini (PRE-...)"
-                className="flex-1 min-w-0 bg-bg-elevated border border-border rounded-xl px-3 py-2 text-white text-[11px] font-mono outline-none focus:border-green-500/50 placeholder-text-muted transition-colors"
-              />
-              <button
-                onClick={() => {
-                  if (!manualOrderId) return;
-                  onVerifyDirect(manualOrderId, setVerifyingDirect);
-                }}
-                disabled={verifyingDirect || !manualOrderId}
-                className="flex-shrink-0 px-3 py-2 rounded-xl bg-green-600 hover:bg-green-500 disabled:opacity-50 text-white text-[11px] font-bold transition-colors flex items-center gap-1"
-              >
-                {verifyingDirect ? (
-                  <div className="w-3 h-3 border border-white/40 border-t-white rounded-full animate-spin" />
+              <div className="text-right flex flex-col items-end">
+                {profile?.isAdmin ? (
+                  <span className="text-[11px] font-bold text-red-400">Admin (Unlimited)</span>
+                ) : profile?.isPremium && !premiumExpired ? (
+                  <div>
+                    <span className="text-[11px] font-bold text-yellow-400">Aktif</span>
+                    {premiumLabel && (
+                      <p className="text-[10px] text-text-muted mt-0.5">
+                        {premiumDaysLeft !== null ? `${premiumDaysLeft} hari lagi · ` : ''}Exp: {premiumLabel}
+                      </p>
+                    )}
+                  </div>
+                ) : premiumExpired ? (
+                  <div>
+                    <span className="text-[11px] font-bold text-red-400">Kadaluarsa</span>
+                    {premiumLabel && <p className="text-[10px] text-text-muted mt-0.5">{premiumLabel}</p>}
+                  </div>
                 ) : (
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-3.5 h-3.5"><polyline points="20 6 9 17 4 12" /></svg>
+                  <span className="text-[11px] text-text-muted">Tidak Aktif</span>
                 )}
-              </button>
-            </div>
-            <p className="text-[10px] text-text-muted -mt-1">Masukkan kode order (ref_id) jika sudah bayar via WijayaPay.</p>
 
-            {/* Riwayat pending orders */}
-            {showOrderHistory && pendingOrders.length > 0 && (
-              <div className="space-y-2 pt-1">
-                <p className="text-[10px] text-text-muted font-semibold uppercase tracking-wider">Riwayat Kode Order</p>
-                {[...pendingOrders].reverse().map((o) => {
-                  const date = o.createdAt
-                    ? new Date(o.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
-                    : '—';
-                  return (
-                    <div key={o.orderId} className="flex items-center justify-between gap-2 p-2.5 bg-bg-elevated rounded-xl border border-border">
-                      <div className="min-w-0 flex-1">
-                        <p className="text-white font-mono text-[10px] font-bold truncate">{o.orderId}</p>
-                        <p className="text-text-muted text-[9px] mt-0.5">
-                          Rp{o.amount?.toLocaleString('id-ID')} · {o.days} hari · {date}
-                        </p>
-                      </div>
-                      <button
-                        onClick={() => {
-                          setManualOrderId(o.orderId);
-                          onVerifyDirect(o.orderId, setVerifyingDirect);
-                        }}
-                        disabled={verifyingDirect}
-                        className="flex-shrink-0 px-2.5 py-1.5 rounded-lg bg-green-600/20 hover:bg-green-600/40 text-green-400 text-[10px] font-bold border border-green-500/30 transition-colors disabled:opacity-50"
-                      >
-                        Verif
-                      </button>
-                    </div>
-                  );
-                })}
+                {/* BUTTON CLAIM TRIAL */}
+                {profile && !profile.hasUsedTrial && !profile.isAdmin && (!profile.isPremium || premiumExpired) && (
+                  <button
+                    onClick={onClaimTrial}
+                    className="mt-2 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg shadow-[0_0_15px_rgba(234,179,8,0.3)] transition-all active:scale-95 flex items-center gap-1"
+                  >
+                    <span>🎁 Klaim Trial 2 Hari GRATIS!</span>
+                  </button>
+                )}
+                {/* BUTTON UPGRADE PREMIUM */}
+                {profile && !profile.isAdmin && (!profile.isPremium || premiumExpired) && (
+                  <button
+                    onClick={onUpgradePremium}
+                    className="mt-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg shadow-[0_0_15px_rgba(139,92,246,0.3)] transition-all active:scale-95 flex items-center gap-1"
+                  >
+                    <svg viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+                    <span>Upgrade Premium – Rp3.000 / 7 Hari</span>
+                  </button>
+                )}
+                {/* BUTTON VERIFIKASI LANGSUNG — muncul jika ada pending order */}
+                {profile?.pendingPremiumOrders?.length > 0 && (!profile.isPremium || premiumExpired) && (
+                  <button
+                    onClick={() => onVerifyDirect(profile.pendingPremiumOrders.at(-1).orderId, setVerifyingDirect)}
+                    disabled={verifyingDirect}
+                    className="mt-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 disabled:opacity-60 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg shadow-[0_0_15px_rgba(16,185,129,0.3)] transition-all active:scale-95 flex items-center gap-1"
+                  >
+                    {verifyingDirect ? (
+                      <><div className="w-2.5 h-2.5 border border-white/40 border-t-white rounded-full animate-spin" /><span>Memverifikasi...</span></>
+                    ) : (
+                      <><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-3 h-3"><polyline points="20 6 9 17 4 12" /></svg><span>Cek Status Pembayaran</span></>
+                    )}
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Divider */}
+            <div className="h-px bg-border" />
+
+            {/* Verifikasi Kode Manual + History — hanya tampil jika belum premium aktif */}
+            {!profile?.isAdmin && (!profile?.isPremium || premiumExpired) && (
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-3.5 h-3.5 text-green-400 flex-shrink-0">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    <span className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Verifikasi Kode Pembayaran</span>
+                  </div>
+                  {pendingOrders.length > 0 && (
+                    <button
+                      onClick={() => setShowOrderHistory(v => !v)}
+                      className="text-[10px] text-blue-400 hover:text-blue-300 font-bold flex items-center gap-1 transition-colors"
+                    >
+                      {showOrderHistory ? 'Sembunyikan' : `Riwayat (${pendingOrders.length})`}
+                    </button>
+                  )}
+                </div>
+
+                {/* Input kode manual */}
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={manualOrderId}
+                    onChange={e => setManualOrderId(e.target.value.trim())}
+                    placeholder="Tempel kode order di sini (PRE-...)"
+                    className="flex-1 min-w-0 bg-bg-elevated border border-border rounded-xl px-3 py-2 text-white text-[11px] font-mono outline-none focus:border-green-500/50 placeholder-text-muted transition-colors"
+                  />
+                  <button
+                    onClick={() => {
+                      if (!manualOrderId) return;
+                      onVerifyDirect(manualOrderId, setVerifyingDirect);
+                    }}
+                    disabled={verifyingDirect || !manualOrderId}
+                    className="flex-shrink-0 px-3 py-2 rounded-xl bg-green-600 hover:bg-green-500 disabled:opacity-50 text-white text-[11px] font-bold transition-colors flex items-center gap-1"
+                  >
+                    {verifyingDirect ? (
+                      <div className="w-3 h-3 border border-white/40 border-t-white rounded-full animate-spin" />
+                    ) : (
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-3.5 h-3.5"><polyline points="20 6 9 17 4 12" /></svg>
+                    )}
+                  </button>
+                </div>
+                <p className="text-[10px] text-text-muted -mt-1">Masukkan kode order (ref_id) jika sudah bayar via WijayaPay.</p>
+
+                {/* Riwayat pending orders */}
+                {showOrderHistory && pendingOrders.length > 0 && (
+                  <div className="space-y-2 pt-1">
+                    <p className="text-[10px] text-text-muted font-semibold uppercase tracking-wider">Riwayat Kode Order</p>
+                    {[...pendingOrders].reverse().map((o) => {
+                      const date = o.createdAt
+                        ? new Date(o.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+                        : '—';
+                      return (
+                        <div key={o.orderId} className="flex items-center justify-between gap-2 p-2.5 bg-bg-elevated rounded-xl border border-border">
+                          <div className="min-w-0 flex-1">
+                            <p className="text-white font-mono text-[10px] font-bold truncate">{o.orderId}</p>
+                            <p className="text-text-muted text-[9px] mt-0.5">
+                              Rp{o.amount?.toLocaleString('id-ID')} · {o.days} hari · {date}
+                            </p>
+                          </div>
+                          <button
+                            onClick={() => {
+                              setManualOrderId(o.orderId);
+                              onVerifyDirect(o.orderId, setVerifyingDirect);
+                            }}
+                            disabled={verifyingDirect}
+                            className="flex-shrink-0 px-2.5 py-1.5 rounded-lg bg-green-600/20 hover:bg-green-600/40 text-green-400 text-[10px] font-bold border border-green-500/30 transition-colors disabled:opacity-50"
+                          >
+                            Verif
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             )}
-          </div>
-        )}
 
-        {/* Divider */}
-        <div className="h-px bg-border" />
+            {/* Divider */}
+            <div className="h-px bg-border" />
+          </>
+        )}
 
         {/* Tanggal Bergabung */}
         <div className="flex items-center justify-between">
