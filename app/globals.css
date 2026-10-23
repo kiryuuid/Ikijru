@@ -160,3 +160,15 @@ input[type=range]::-moz-range-track {
   background: #334155;
   border-radius: 2px;
 }
+
+/* Sembunyikan badge / drawer 'Powered by Netlify' */
+iframe[id*="netlify"],
+[data-netlify-deploy-id],
+[class*="netlify-drawer"],
+#netlify-drawer,
+netlify-drawer {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
