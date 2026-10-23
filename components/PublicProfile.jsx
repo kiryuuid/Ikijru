@@ -1017,24 +1017,13 @@ export default function PublicProfile({ userId }) {
                   )}
                 </div>
 
-                <div className="mt-2 flex items-start gap-1.5">
-                  <p className="text-text-muted text-xs italic flex-1 leading-relaxed">
-                    {profile?.bio
-                      ? `"${profile.bio}"`
-                      : isOwn ? 'Belum ada bio. Klik edit untuk menambahkan.' : ''}
-                  </p>
-                  {isOwn && (
-                    <button
-                      onClick={() => setShowEditBio(true)}
-                      className="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-lg border border-border text-text-muted hover:border-accent-red/50 hover:text-accent-red transition-colors"
-                    >
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-3 h-3">
-                        <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
-                        <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
-                      </svg>
-                    </button>
-                  )}
-                </div>
+                {profile?.bio && (
+                  <div className="mt-2 flex items-start gap-1.5">
+                    <p className="text-text-muted text-xs italic flex-1 leading-relaxed">
+                      "{profile.bio}"
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -1049,7 +1038,8 @@ export default function PublicProfile({ userId }) {
               <StatCard value={stats.dropped} label="Dihentikan" color="text-gray-400" />
             </div>
 
-            {isOwn && (
+            {/* Form edit profil (Nama Tampilan, Foto Profil, Simpan Perubahan) disembunyikan sesuai permintaan */}
+            {false && isOwn && (
               <div className="mt-4 p-3 border border-border rounded-xl bg-bg-elevated flex flex-col gap-2">
                 <div className="flex flex-col gap-1">
                   <label className="text-[11px] font-semibold text-text-muted">Nama Tampilan</label>
@@ -1100,7 +1090,7 @@ export default function PublicProfile({ userId }) {
         </div>
 
         {/* Account Info — hanya tampil untuk owner */}
-        {isOwn && pendingOrders.length > 0 && (
+        {false && isOwn && pendingOrders.length > 0 && (
           <div className="mx-4 mt-3 p-3 rounded-xl border border-yellow-500/30 bg-yellow-500/10 text-[11px] text-yellow-100 flex flex-col sm:flex-row items-start sm:items-center gap-3">
             <div className="flex items-start gap-2 flex-1">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4 mt-0.5 text-yellow-300 flex-shrink-0">
