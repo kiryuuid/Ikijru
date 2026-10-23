@@ -10,10 +10,15 @@ export async function GET(request, { params }) {
     const { slug, chapterSlug } = params;
 
     const manga = await Manga.findOne({ slug })
-      .select('_id title slug thumb')
+      .select('_id title slug thumb metadata')
       .lean();
 
     if (!manga) return errorResponse('Manga not found', 404);
+
+    // Pastikan type tersinkronisasi dari metadata
+    if (manga.metadata?.type) {
+      manga.type = manga.metadata.type;
+    }
 
     const chapter = await Chapter.findOne({
       manga_id: manga._id,

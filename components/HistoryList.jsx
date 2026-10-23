@@ -25,10 +25,10 @@ function timeAgo(dateStr) {
 
 // ─── Warna badge berdasarkan tipe ────────────────────────
 function typeBadgeClass(type) {
-  const t = type?.toLowerCase();
-  if (t === 'manhwa') return 'bg-purple-900/50 border-purple-700 text-purple-300';
-  if (t === 'manhua') return 'bg-orange-900/50 border-orange-700 text-orange-300';
-  if (t === 'doujinshi') return 'bg-pink-900/50 border-pink-700 text-pink-300';
+  const t = type?.toLowerCase() || '';
+  if (t.includes('doujin')) return 'bg-pink-900/50 border-pink-700 text-pink-300';
+  if (t.includes('manhwa')) return 'bg-purple-900/50 border-purple-700 text-purple-300';
+  if (t.includes('manhua')) return 'bg-orange-900/50 border-orange-700 text-orange-300';
   return 'bg-blue-900/50 border-blue-700 text-blue-300';
 }
 
@@ -206,6 +206,7 @@ export default function HistoryList() {
   const [clearingAll, setClearingAll] = useState(false);
   const [confirm, setConfirm] = useState(null);   // { type: 'all' | 'item', slug? }
   const [search, setSearch] = useState('');
+  const [selectedType, setSelectedType] = useState('all');
 
   // Redirect jika belum login
   useEffect(() => {
@@ -290,13 +291,17 @@ export default function HistoryList() {
     }
   };
 
-  // Filter by search
-  const filtered = search.trim()
-    ? history.filter(h =>
+  // Available types in history
+  const uniqueTypes = Array.from(new Set(history.map(h => h.type?.toLowerCase()).filter(Boolean)));
+
+  // Filter by search & type
+  const filtered = history.filter(h => {
+    const matchesSearch = !search.trim() ||
       h.title?.toLowerCase().includes(search.toLowerCase()) ||
-      h.lastChapterTitle?.toLowerCase().includes(search.toLowerCase())
-    )
-    : history;
+      h.lastChapterTitle?.toLowerCase().includes(search.toLowerCase());
+    const matchesType = selectedType === 'all' || h.type?.toLowerCase() === selectedType;
+    return matchesSearch && matchesType;
+  });
 
   // Render loading
   if (authLoading || loading) {
@@ -362,6 +367,48 @@ export default function HistoryList() {
               </button>
             )}
           </div>
+
+          {/* Filter Type Tabs */}
+          {uniqueTypes.length > 1 && (
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-2 scrollbar-hide mb-3 -mx-1 px-1">
+              <button
+                onClick={() => setSelectedType('all')}
+                className={`flex items-center gap-1.5 flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                  selectedType === 'all'
+                    ? 'bg-accent-red text-white shadow-md shadow-accent-red/20'
+                    : 'bg-bg-card border border-border text-text-muted hover:border-accent-red/40 hover:text-text-secondary'
+                }`}
+              >
+                Semua
+                <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
+                  selectedType === 'all' ? 'bg-white/20 text-white' : 'bg-bg-elevated text-text-muted'
+                }`}>
+                  {history.length}
+                </span>
+              </button>
+              {uniqueTypes.map(t => {
+                const count = history.filter(h => h.type?.toLowerCase() === t).length;
+                return (
+                  <button
+                    key={t}
+                    onClick={() => setSelectedType(t)}
+                    className={`flex items-center gap-1.5 flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold uppercase transition-all ${
+                      selectedType === t
+                        ? 'bg-accent-red text-white shadow-md shadow-accent-red/20'
+                        : 'bg-bg-card border border-border text-text-muted hover:border-accent-red/40 hover:text-text-secondary'
+                    }`}
+                  >
+                    {t}
+                    <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
+                      selectedType === t ? 'bg-white/20 text-white' : 'bg-bg-elevated text-text-muted'
+                    }`}>
+                      {count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
 
           {/* Search / Filter */}
           {history.length > 3 && (
