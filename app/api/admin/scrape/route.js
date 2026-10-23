@@ -19,6 +19,68 @@ async function isAdmin(request) {
 const USER_AGENT =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
 
+const HTML_NAMED_ENTITIES = {
+  '&amp;': '&',
+  '&lt;': '<',
+  '&gt;': '>',
+  '&quot;': '"',
+  '&apos;': "'",
+  '&#039;': "'",
+  '&#39;': "'",
+  '&nbsp;': ' ',
+  '&ndash;': '–',
+  '&mdash;': '—',
+  '&lsquo;': '‘',
+  '&rsquo;': '’',
+  '&sbquo;': '‚',
+  '&ldquo;': '“',
+  '&rdquo;': '”',
+  '&bdquo;': '„',
+  '&hellip;': '…',
+  '&bull;': '•',
+  '&copy;': '©',
+  '&reg;': '®',
+  '&trade;': '™',
+  '&laquo;': '«',
+  '&raquo;': '»',
+};
+
+function decodeHtmlEntities(str) {
+  if (!str || typeof str !== 'string') return '';
+  let decoded = str;
+
+  for (let i = 0; i < 2; i++) {
+    if (!decoded.includes('&')) break;
+
+    decoded = decoded
+      .replace(/&#(\d+);?/g, (match, dec) => {
+        try {
+          return String.fromCodePoint(parseInt(dec, 10));
+        } catch {
+          return match;
+        }
+      })
+      .replace(/&#x([0-9a-fA-F]+);?/g, (match, hex) => {
+        try {
+          return String.fromCodePoint(parseInt(hex, 16));
+        } catch {
+          return match;
+        }
+      })
+      .replace(/&[a-zA-Z]+;/g, (match) => {
+        return HTML_NAMED_ENTITIES[match] !== undefined ? HTML_NAMED_ENTITIES[match] : match;
+      });
+  }
+
+  return decoded;
+}
+
+function cleanScrapedText(str) {
+  if (!str || typeof str !== 'string') return '';
+  const noTags = str.replace(/<[^>]+>/g, '');
+  return decodeHtmlEntities(noTags).replace(/\s+/g, ' ').trim();
+}
+
 // Helper: Scrape manga info and chapter links
 async function scrapeMangaDetails(url) {
   const res = await fetch(url, {
@@ -35,7 +97,7 @@ async function scrapeMangaDetails(url) {
   const titleMatch =
     html.match(/<h1[^>]*itemprop="name"[^>]*>([\s\S]*?)<\/h1>/i) ||
     html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i);
-  const title = titleMatch ? titleMatch[1].replace(/<[^>]+>/g, '').trim() : '';
+  const title = titleMatch ? cleanScrapedText(titleMatch[1]) : '';
 
   // 2. Slug
   let slug = '';
@@ -66,7 +128,7 @@ async function scrapeMangaDetails(url) {
   const synMatch = html.match(
     /<div class="entry-content entry-content-single"[^>]*>([\s\S]*?)<\/div>/i
   );
-  const synopsis = synMatch ? synMatch[1].replace(/<[^>]+>/g, '').trim() : '';
+  const synopsis = synMatch ? cleanScrapedText(synMatch[1]) : '';
 
   // 5. Metadata fields (tsu-info-row atau standar mangareader)
   const getInfoValue = (label) => {
@@ -75,7 +137,7 @@ async function scrapeMangaDetails(url) {
       'i'
     );
     const m = html.match(reg);
-    return m ? m[1].replace(/<[^>]+>/g, '').trim() : '';
+    return m ? cleanScrapedText(m[1]) : '';
   };
 
   const rawType = getInfoValue('Type').toLowerCase();
@@ -124,7 +186,7 @@ async function scrapeMangaDetails(url) {
   if (genresBlock) {
     const aMatches = genresBlock[1].matchAll(/<a[^>]*>([\s\S]*?)<\/a>/gi);
     for (const am of aMatches) {
-      const g = am[1].replace(/<[^>]+>/g, '').trim();
+      const g = cleanScrapedText(am[1]);
       if (g && !tags.includes(g)) tags.push(g);
     }
   }
@@ -142,7 +204,7 @@ async function scrapeMangaDetails(url) {
       const numRaw = lm[1];
       const fullLi = lm[2];
       const link = lm[3];
-      const rawTitle = lm[4].replace(/<[^>]+>/g, '').trim();
+      const rawTitle = cleanScrapedText(lm[4]);
 
       // 1. Ekstraksi Nomor Chapter
       let chapterNumStr = '';

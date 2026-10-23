@@ -10,18 +10,18 @@ const NOTIF_CACHE_TTL_MS = 15000;
 const notificationsCache = new Map();
 
 // ─── Icons ────────────────────────────────────────────────
-function HomeIcon({ active }) {
+function HomeIcon({ active, className = "w-6 h-6" }) {
   return (
-    <svg viewBox="0 0 24 24" fill={active ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" className="w-6 h-6">
+    <svg viewBox="0 0 24 24" fill={active ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" className={className}>
       <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
       <polyline points="9 22 9 12 15 12 15 22" />
     </svg>
   );
 }
 
-function GridIcon({ active }) {
+function GridIcon({ active, className = "w-6 h-6" }) {
   return (
-    <svg viewBox="0 0 24 24" fill={active ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" className="w-6 h-6">
+    <svg viewBox="0 0 24 24" fill={active ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" className={className}>
       <rect x="3" y="3" width="7" height="7" rx="1" />
       <rect x="14" y="3" width="7" height="7" rx="1" />
       <rect x="3" y="14" width="7" height="7" rx="1" />
@@ -30,17 +30,17 @@ function GridIcon({ active }) {
   );
 }
 
-function BookmarkIcon({ active }) {
+function BookmarkIcon({ active, className = "w-6 h-6" }) {
   return (
-    <svg viewBox="0 0 24 24" fill={active ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" className="w-6 h-6">
+    <svg viewBox="0 0 24 24" fill={active ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" className={className}>
       <path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z" />
     </svg>
   );
 }
 
-function HistoryIcon({ active }) {
+function HistoryIcon({ active, className = "w-6 h-6" }) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-6 h-6">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}>
       <polyline points="1 4 1 10 7 10" />
       <path d="M3.51 15a9 9 0 1 0 .49-4.95" strokeLinecap="round" />
       <polyline points="12 7 12 12 16 14" />
@@ -48,10 +48,10 @@ function HistoryIcon({ active }) {
   );
 }
 
-function GenreIcon({ active }) {
+function GenreIcon({ active, className = "w-6 h-6" }) {
   return (
     <TagsIcon
-      className="w-6 h-6"
+      className={className}
       fill={active ? 'currentColor' : 'none'}
       stroke="currentColor"
       strokeWidth={2}
@@ -427,22 +427,22 @@ export default function Navbar() {
   return (
     <>
       <header className="fixed top-0 left-0 right-0 z-50 bg-bg-primary/90 backdrop-blur-md border-b border-border">
-        <div className="max-w-7xl mx-auto flex items-center justify-between px-3 sm:px-6 lg:px-8 h-14 md:h-16 min-w-0 gap-3">
+        <div className="max-w-7xl 2xl:max-w-[1440px] mx-auto flex items-center justify-between px-3 sm:px-6 lg:px-8 h-14 md:h-16 gap-4 lg:gap-8">
           {/* Logo & Desktop Nav */}
-          <div className="flex items-center gap-3 lg:gap-6 min-w-0">
+          <div className="flex items-center gap-3 lg:gap-5 xl:gap-8 flex-shrink-0 min-w-0">
             <Link href="/" className="flex items-center gap-2 min-w-0 flex-shrink-0 group">
               <img
                 src="/logo.png"
                 alt="Pojokmanga"
                 className="w-8 h-8 md:w-9 md:h-9 object-contain rounded-lg transition-transform group-hover:scale-105"
               />
-              <span className="font-display text-2xl md:text-3xl text-accent-red tracking-wider">
+              <span className="font-display text-xl md:text-2xl xl:text-3xl text-accent-red tracking-wider">
                 {process.env.NEXT_PUBLIC_SITE_NAME || 'POJOKMANGA'}
               </span>
             </Link>
 
             {/* Desktop Navigation Links */}
-            <nav className="hidden md:flex items-center gap-1 lg:gap-2">
+            <nav className="hidden lg:flex items-center gap-1 xl:gap-1.5 flex-shrink-0">
               {NAV_ITEMS.map(({ href, icon: Icon, label }) => {
                 const active = pathname === href || (href !== '/' && pathname?.startsWith(href));
                 const needsAuth = href === '/bookmarks' || href === '/history';
@@ -450,12 +450,12 @@ export default function Navbar() {
                   <Link
                     key={href}
                     href={needsAuth && !user ? '/login' : href}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs lg:text-sm font-bold transition-all relative ${active
+                    className={`flex items-center gap-1.5 px-2.5 py-1.5 xl:px-3 xl:py-2 rounded-xl text-xs xl:text-sm font-bold transition-all relative whitespace-nowrap ${active
                         ? 'bg-accent-red/10 text-accent-red shadow-sm'
                         : 'text-text-secondary hover:text-text-primary hover:bg-bg-elevated'
                       }`}
                   >
-                    <Icon active={active} />
+                    <Icon active={active} className="w-4 h-4 flex-shrink-0" />
                     <span>{label}</span>
                     {needsAuth && !user && (
                       <span className="w-1.5 h-1.5 rounded-full bg-accent-red" />
@@ -467,11 +467,11 @@ export default function Navbar() {
           </div>
 
           {/* Right Area: Search, Theme, Notif, Admin, User */}
-          <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+          <div className="flex items-center gap-2 sm:gap-2.5 lg:gap-3 flex-shrink-0">
             {/* Desktop Quick Search Input */}
             <button
               onClick={() => setSearchOpen(true)}
-              className="hidden sm:flex items-center gap-2.5 bg-bg-elevated border border-border hover:border-accent-red/50 rounded-xl px-3.5 py-1.5 lg:py-2 text-xs text-text-muted hover:text-text-primary transition-all w-40 md:w-48 lg:w-60 group shadow-sm"
+              className="hidden sm:flex items-center gap-2.5 bg-bg-elevated border border-border hover:border-accent-red/50 rounded-xl px-3 py-1.5 lg:py-2 text-xs text-text-muted hover:text-text-primary transition-all w-36 lg:w-40 xl:w-56 min-w-[130px] flex-shrink group shadow-sm"
               title="Cari komik (Ctrl + K)"
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4 text-text-muted group-hover:text-accent-red transition-colors flex-shrink-0">
@@ -490,6 +490,9 @@ export default function Navbar() {
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
             </button>
 
+            {/* Divider between Search and Actions */}
+            <div className="hidden sm:block h-5 w-px bg-border/80 mx-0.5" />
+
             {/* Theme Toggle */}
             <ThemeToggle />
 
@@ -497,7 +500,7 @@ export default function Navbar() {
             {user?.isAdmin && (
               <Link
                 href="/admin"
-                className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-accent-red/30 bg-accent-red/10 text-accent-red hover:bg-accent-red hover:text-white transition-all text-xs font-bold shadow-sm"
+                className="hidden md:flex items-center gap-1.5 px-2.5 lg:px-3 py-1.5 rounded-xl border border-accent-red/30 bg-accent-red/10 text-accent-red hover:bg-accent-red hover:text-white transition-all text-xs font-bold shadow-sm whitespace-nowrap flex-shrink-0"
                 title="Buka Admin Panel"
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-3.5 h-3.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
@@ -566,7 +569,7 @@ export default function Navbar() {
       <SmartSearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
 
       {/* Mobile-Only Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-bg-primary/95 backdrop-blur-md border-t border-border md:hidden">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-bg-primary/95 backdrop-blur-md border-t border-border lg:hidden">
         <div className="max-w-md mx-auto flex items-center justify-around h-16" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
           {NAV_ITEMS.map(({ href, icon: Icon, label }) => {
             const active = pathname === href;

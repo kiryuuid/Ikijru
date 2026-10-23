@@ -62,7 +62,7 @@ body {
 
 /* Safe Area for Mobile / Desktop */
 .pb-safe { padding-bottom: calc(4.5rem + env(safe-area-inset-bottom)); }
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
   .pb-safe { padding-bottom: 2.5rem; }
 }
 
